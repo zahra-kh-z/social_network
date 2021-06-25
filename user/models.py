@@ -3,6 +3,10 @@ from django.db import models
 
 # Create your models here.
 class User(models.Model):
+    class Meta:
+        verbose_name = 'کاربر'
+        verbose_name_plural = "کاربر ها"
+
     GENDER_CHOICES = [('M', 'Male'), ('F', 'Female')]
     first_name = models.CharField('first name', max_length=100, null=True)
     last_name = models.CharField('last name', max_length=100, null=True, blank=True)
@@ -17,6 +21,7 @@ class User(models.Model):
     email = models.EmailField('email')
     register_date = models.DateTimeField('register date', auto_now_add=True)
     update_date = models.DateTimeField('update date')
+    credit = models.IntegerField('credit', default=20)
 
     @property
     def full_name(self):
@@ -24,3 +29,12 @@ class User(models.Model):
 
     def __str__(self):
         return f'{self.username} registered at {self.register_date}'
+
+    def delete(self):
+        deleted_obj = f'{self.first_name}_{self.last_name} object/user deleted'
+        self.delete()
+        return deleted_obj
+
+    def update_credit(self, amount):
+        self.credit += amount
+        self.save()
