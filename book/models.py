@@ -4,6 +4,7 @@ from django.utils import timezone
 
 # Create your models here.
 class Author(models.Model):
+    """Definition of book authors by name"""
     name = models.CharField('name', max_length=30)
 
     def __str__(self):
@@ -11,6 +12,7 @@ class Author(models.Model):
 
 
 class Book(models.Model):
+    """Define book information"""
     class Meta:
         verbose_name = 'کتاب'
         verbose_name_plural = "کتاب ها"
@@ -18,22 +20,29 @@ class Book(models.Model):
     STATUS = [('F', 'Free'), ('B', 'borrowed'), ('D', 'deprecated')]
     name = models.CharField('Book name', max_length=100, null=True, blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
-    # publish_year = models.DateTimeField('year of book publish', default=timezone.now())
-    # publish_year = models.DateTimeField('year of book publish', auto_now_add=True)
     publish_year = models.IntegerField('year of book publish', null=True)
     record_date = models.DateField('Time to record book', null=True)
-    # record_date = models.DateTimeField('Time to record book', null=True, auto_now_add=True)
     update_time = models.DateTimeField('update time Book information', default=timezone.now)
     status = models.CharField(max_length=1, choices=STATUS, default="F")
 
+    # # How to use DateTimeField for this fields
+    # publish_year = models.DateTimeField('year of book publish', default=timezone.now())
+    # publish_year = models.DateTimeField('year of book publish', auto_now_add=True)
+    # record_date = models.DateTimeField('Time to record book', null=True, auto_now_add=True)
+
     @property
-    def full_name(self):
+    def book_author(self):
+        """This method returns the name and author of the book"""
         return f'{self.name} {self.author}'
 
     def __str__(self):
         return f'{self.name} : status is {self.status}'
 
     def change_status(self):
+        """
+        This method determines the status of each book
+        F is Free, B is borrowed, D is deprecated
+        """
         if self.status == 'F':
             self.status = 'B'
         else:

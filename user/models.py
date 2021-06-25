@@ -3,6 +3,7 @@ from django.db import models
 
 # Create your models here.
 class User(models.Model):
+    """Define user information"""
     class Meta:
         verbose_name = 'کاربر'
         verbose_name_plural = "کاربر ها"
@@ -25,16 +26,19 @@ class User(models.Model):
 
     @property
     def full_name(self):
+        """This method returns the user's full name"""
         return f'{self.first_name} {self.last_name}'
 
     def __str__(self):
         return f'{self.username} registered at {self.register_date}'
 
     def delete(self):
+        """This method deleted the object/user"""
         deleted_obj = f'{self.first_name}_{self.last_name} object/user deleted'
         self.delete()
         return deleted_obj
 
     def update_credit(self, amount):
+        """This method updates the user credentials."""
         self.credit += amount
         self.save()
