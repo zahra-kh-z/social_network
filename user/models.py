@@ -41,7 +41,7 @@ class User(models.Model):
         return deleted_obj
 
     def update_credit(self, amount):
-        """This method updates the user credentials."""
+        """This method updates the user credentials. """
         self.credit += amount
         self.save()
 
