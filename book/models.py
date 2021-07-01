@@ -75,7 +75,7 @@ class Like(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def toggle(self):
-        """status for like/dislike"""
+        """status for like/dislike """
         if self.like == 'L':
             self.like = 'D'
         else:
