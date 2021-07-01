@@ -4,6 +4,7 @@ from django.db import models
 # Create your models here.
 class User(models.Model):
     """Define user information"""
+
     class Meta:
         verbose_name = 'کاربر'
         verbose_name_plural = "کاربر ها"
@@ -23,6 +24,7 @@ class User(models.Model):
     register_date = models.DateTimeField('register date', auto_now_add=True)
     update_date = models.DateTimeField('update date')
     credit = models.IntegerField('credit', default=20)
+    friends = models.ManyToManyField("User", blank=True, related_name="friend")
 
     @property
     def full_name(self):
@@ -42,3 +44,16 @@ class User(models.Model):
         """This method updates the user credentials."""
         self.credit += amount
         self.save()
+
+
+class Relationship(models.Model):
+    """This method defined a relationship for a user """
+    STATUS_CHOICES = [('A', 'accepted'), ('R', 'requested'), ('N', 'name')]
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='N')
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.sender}, {self.receiver}, {self.status}'
