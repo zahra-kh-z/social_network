@@ -35,7 +35,7 @@ class User(models.Model):
         return f'{self.username} registered at {self.register_date}'
 
     def delete(self):
-        """This method deleted the object/user"""
+        """This method deleted the object/user """
         deleted_obj = f'{self.first_name}_{self.last_name} object/user deleted'
         self.delete()
         return deleted_obj
