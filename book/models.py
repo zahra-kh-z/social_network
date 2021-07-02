@@ -1,29 +1,26 @@
 from django.db import models
 from django.utils import timezone
+from user.models import User
 
 
 # Create your models here.
-class Author(models.Model):
-    """Definition of book authors by name"""
-    name = models.CharField('name', max_length=30)
-
-    def __str__(self):
-        return f'{self.name}'
-
-
 class Book(models.Model):
     """Define book information"""
+
     class Meta:
         verbose_name = 'کتاب'
         verbose_name_plural = "کتاب ها"
 
     STATUS = [('F', 'Free'), ('B', 'borrowed'), ('D', 'deprecated')]
     name = models.CharField('Book name', max_length=100, null=True, blank=True)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
+    # author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
     publish_year = models.IntegerField('year of book publish', null=True)
-    record_date = models.DateField('Time to record book', null=True)
-    update_time = models.DateTimeField('update time Book information', default=timezone.now)
+    image = models.ImageField(upload_to='books/', blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    liked = models.ManyToManyField(User, blank=True, related_name="likes")
     status = models.CharField(max_length=1, choices=STATUS, default="F")
+    created = models.DateField('Time to record book', null=True)
+    updated = models.DateTimeField('update time Book information', default=timezone.now)
 
     # # How to use DateTimeField for this fields
     # publish_year = models.DateTimeField('year of book publish', default=timezone.now())
@@ -33,7 +30,8 @@ class Book(models.Model):
     @property
     def book_author(self):
         """This method returns the name and author of the book"""
-        return f'{self.name} {self.author}'
+        # return f'{self.name} {self.author}'
+        return f'{self.name} {self.status}'
 
     def __str__(self):
         return f'{self.name} : status is {self.status}'
@@ -52,6 +50,44 @@ class Book(models.Model):
 
     def get_publish_year(self):
         return self.publish_year.year
+
+
+class Comment(models.Model):
+    """set a comment for a book"""
+
+    class Meta:
+        ordering = ('-created',)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    text = models.TextField(max_length=500)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class Like(models.Model):
+    """set a like for book"""
+    LIKE_CHOICE = [('L', 'like'), ('D', 'dislike')]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    like = models.CharField(max_length=3, choices=LIKE_CHOICE)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def toggle(self):
+        """status for like/dislike """
+        if self.like == 'L':
+            self.like = 'D'
+        else:
+            self.like = 'L'
+        self.save()
+
+# class Author(models.Model):
+#     """Definition of book authors by name"""
+#     name = models.CharField('name', max_length=30)
+#
+#     def __str__(self):
+#         return f'{self.name}'
 
 # # python console, how to create object by models
 # from book.models import Book, Author
