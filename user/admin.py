@@ -10,3 +10,4 @@ admin.site.register(Relationship)
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'username']
+

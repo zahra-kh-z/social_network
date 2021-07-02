@@ -12,3 +12,4 @@ admin.site.register(Like)
 # @admin.register(Book)
 # class BookAdmin(admin.ModelAdmin):
 #     list_display = ['id', 'name']
+
