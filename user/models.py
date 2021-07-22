@@ -1,15 +1,19 @@
 from django.db import models
-
+from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class User(models.Model):
+class Profile(AbstractUser):
     """Define user information"""
 
     class Meta:
         verbose_name = 'کاربر'
         verbose_name_plural = "کاربر ها"
 
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'username'
     GENDER_CHOICES = [('M', 'Male'), ('F', 'Female')]
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)  # for use default user django
     first_name = models.CharField('first name', max_length=100, null=True)
     last_name = models.CharField('last name', max_length=100, null=True, blank=True)
     # username = models.CharField('username', max_length=50, null=True, blank=True, primary_key=True)
@@ -24,7 +28,8 @@ class User(models.Model):
     register_date = models.DateTimeField('register date', auto_now_add=True)
     update_date = models.DateTimeField('update date', auto_now=True)
     credit = models.IntegerField('credit', default=20)
-    friends = models.ManyToManyField("User", blank=True, related_name="friend")
+    # friends = models.ManyToManyField("User", blank=True, related_name="friend")
+    friends = models.ManyToManyField("Profile", blank=True, related_name="my_friends")
 
     @property
     def full_name(self):
@@ -55,18 +60,20 @@ class User(models.Model):
 
     def get_books(self):
         """get all book of user"""
-        return self.user.all()
+        # return self.user.all()
+        return self.owner.all()
 
     def get_books_no(self):
         """get count all book of user"""
-        return self.user.all().count()
+        # return self.user.all().count()
+        return self.owner.all().count()
 
 
 class Relationship(models.Model):
     """This method defined a relationship for a user"""
     STATUS_CHOICES = [('A', 'accepted'), ('R', 'requested'), ('N', 'name')]
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="receiver")
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='N')
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -97,4 +104,3 @@ class Relationship(models.Model):
 # >>> sara.friends.all()
 # <QuerySet [<User: parisa74103 registered at 2021-07-09 12:58:03.315138+00:00>, <User: zahra74103 registered
 # at 2021-07-09 12:58:39.261273+00:00>]>
-# >>>

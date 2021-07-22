@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from user.models import User
+from user.models import Profile
 
 
 # Create your models here.
@@ -16,8 +16,9 @@ class Book(models.Model):
     # author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True)
     publish_year = models.IntegerField('year of book publish', null=True)
     image = models.ImageField(upload_to='books/', blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
-    liked = models.ManyToManyField(User, blank=True, related_name="likes")
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="owner")
+    liked = models.ManyToManyField(Profile, blank=True, related_name="likes")
     status = models.CharField(max_length=1, choices=STATUS, default="F")
     created = models.DateField('Time to record book', null=True)
     updated = models.DateTimeField('update time Book information', default=timezone.now)
@@ -58,7 +59,7 @@ class Comment(models.Model):
     class Meta:
         ordering = ('-created',)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comment_owner')
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     text = models.TextField(max_length=500)
     updated = models.DateTimeField(auto_now=True)
@@ -68,7 +69,7 @@ class Comment(models.Model):
 class Like(models.Model):
     """set a like for book"""
     LIKE_CHOICE = [('L', 'like'), ('D', 'dislike')]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='like_owner')
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     like = models.CharField(max_length=3, choices=LIKE_CHOICE)
     updated = models.DateTimeField(auto_now=True)
